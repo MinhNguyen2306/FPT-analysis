@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+*.sqlite3
+
+# Virtual environments
+myenv/
+venv/
+.env/
+
+# MySQL / Database
+MYSQL/
+*.jar
+
+# Docker
+docker-compose.override.yml
+
+# Artifacts / temporary files
+artifacts/
+*.log
+*.tmp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other
+--name
