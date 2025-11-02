@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  pyspark:
+    image: apache/spark:3.5.7-scala2.12-java11-python3-r-ubuntu
+    container_name: pyspark_1st
+    hostname: pyspark
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+      --host pyspark --port 7077 --webui-port 8080
+    ports:
+      - "7077:7077"
+      - "7070:8080"
+    volumes:
+      - ./app:/opt/spark-apps
+      - ./mysql-connector-java-8.4.0.jar:/opt/spark/jars/mysql-connector-java-8.4.0.jar
+    networks:
+      - project_1_network
+      
+  spark-worker:
+    image: apache/spark:3.5.7-scala2.12-java11-python3-r-ubuntu
+    container_name: spark-worker_1st
+    depends_on:
+      - pyspark
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker
+      spark://pyspark:7077 --webui-port 8081
+    ports:
+      - "7071:8081"
+    volumes:
+      - ./mysql-connector-java-8.4.0.jar:/opt/spark/jars/mysql-connector-java-8.4.0.jar
+    networks:
+      - project_1_network
+      
+  python:
+    image: python:3.9.25-slim-trixie
+    container_name: python_1st
+    hostname: python
+    command: tail -f /dev/null
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    networks:
+      - project_1_network
+
+  etl_job:
+    build: .
+    container_name: etl_job_1st
+    depends_on:
+      - pyspark
+      - spark-worker
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    command: python ETL_scripts.py
+    networks:
+      - project_1_network
+
+networks:
+  project_1_network:
+    driver: bridge
+
