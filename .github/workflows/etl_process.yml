@@ -19,15 +19,21 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Go to project root
+        run: cd $GITHUB_WORKSPACE
+
       - name: Install dependencies
         run: |
+          cd $GITHUB_WORKSPACE
           pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run Data Checking
         run: |
+          cd $GITHUB_WORKSPACE
           python Data_checking.py
 
       - name: Run Update Script
         run: |
+          cd $GITHUB_WORKSPACE
           python updated_data.py
