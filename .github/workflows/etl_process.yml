@@ -1,10 +1,9 @@
-name: ETL Checking and Update
+name: Run ETL and Update Data
 
 on:
   push:
     branches:
-      - etl_process
-  workflow_dispatch:
+      - main  # chỉ chạy khi có code mới lên branch main
 
 jobs:
   etl_job:
@@ -19,21 +18,13 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Go to project root
-        run: cd $GITHUB_WORKSPACE
-
       - name: Install dependencies
         run: |
-          cd $GITHUB_WORKSPACE
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Data Checking
-        run: |
-          cd $GITHUB_WORKSPACE
-          python Data_checking.py
+      - name: Run data checking
+        run: python Data_checking.py
 
-      - name: Run Update Script
-        run: |
-          cd $GITHUB_WORKSPACE
-          python updated_data.py
+      - name: Run update script
+        run: python updated_data.py
