@@ -1,0 +1,9 @@
+pyspark==3.5.1
+findspark
+pandas
+python-dateutil
+cassandra-driver
+astrapy
+python-dotenv
+time-uuid
+
