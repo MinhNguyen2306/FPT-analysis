@@ -1,33 +1,39 @@
-name: ETL Job CI/CD
+name: Data Checking & Update
 
 on:
   push:
     branches:
       - main
       - etl_process
+  workflow_dispatch:
 
 jobs:
-  build-and-run-etl:
+  data_check_update:
     runs-on: ubuntu-latest
 
+    env:
+      AZURE_SQL_USER: ${{ secrets.AZURE_SQL_USER }}
+      AZURE_SQL_PASS: ${{ secrets.AZURE_SQL_PASS }}
+      AZURE_SQL_URL: ${{ secrets.AZURE_SQL_URL }}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          python-version: '3.9'
 
-      - name: Build Docker image
-        run: docker build -t minhnguyen/etl_process:latest .
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
 
-      - name: Push Docker image
-        run: docker push minhnguyen/etl_process:latest
+      - name: Run data checking
+        run: |
+          python Data_checking.py
 
-      - name: Run ETL Job
-        run: docker run --rm --env-file .env minhnguyen/etl_process:latest
+      - name: Run update script
+        if: success()  # chỉ chạy khi file checking không lỗi
+        run: |
+          python updated_data.py
