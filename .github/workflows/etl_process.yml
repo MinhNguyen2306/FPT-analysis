@@ -3,15 +3,17 @@ name: Run ETL and Update Data
 on:
   push:
     branches:
-      - main  # chỉ chạy khi có code mới lên branch main
+      - main
 
 jobs:
   etl_job:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code from etl_process
         uses: actions/checkout@v4
+        with:
+          ref: etl_process
 
       - name: Set up Python
         uses: actions/setup-python@v5
