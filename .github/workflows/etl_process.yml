@@ -29,4 +29,6 @@ jobs:
         run: python Data_checking.py
 
       - name: Run update script
-        run: python updated_data.py
+        run: |
+          echo "=== Running updated_data.py ==="
+          python -u updated_data.py || (echo "Script failed with code $?" && exit 1)
